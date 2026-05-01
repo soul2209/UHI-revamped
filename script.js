@@ -105,12 +105,14 @@ function calculate() {
   const coolingRange  = maxHeatExcess * 0.60;
   const temps         = [];
 
-  const urbanScale = parseFloat(document.getElementById("urban").value);
-  const greenScale = parseFloat(document.getElementById("green").value);
+  const urbanSlider = parseFloat(document.getElementById("urban").value);
+  const greenSlider = parseFloat(document.getElementById("green").value);
 
   zones.forEach(function(zone, i) {
-    const effectiveUrban = Math.min(zone.urban * (0.5 + urbanScale), 1);
-    const effectiveGreen = Math.min(zone.green * (0.5 + greenScale), 1);
+    // Blend each zone's base value with the global slider (50/50 mix)
+    // so dragging either slider causes a clear, visible shift across all zones
+    const effectiveUrban = (zone.urban + urbanSlider) / 2;
+    const effectiveGreen = (zone.green + greenSlider) / 2;
     const heatExcess = maxHeatExcess * effectiveUrban * (1 - effectiveGreen * 0.7);
     const cooling    = fn(effectiveGreen) * coolingRange;
     const finalTemp  = parseFloat(Math.max(T_ambient + heatExcess - cooling, T_ambient).toFixed(1));
@@ -164,8 +166,8 @@ function calculate() {
   document.getElementById("calc-cooling").innerText          = coolingRange.toFixed(1) + "°C";
 
   document.getElementById("calc-zone-breakdown").innerHTML = zones.map(function(zone, i) {
-    const effectiveUrban = Math.min(zone.urban * (0.5 + urbanScale), 1);
-    const effectiveGreen = Math.min(zone.green * (0.5 + greenScale), 1);
+    const effectiveUrban = (zone.urban + urbanSlider) / 2;
+    const effectiveGreen = (zone.green + greenSlider) / 2;
     const heatExcess = maxHeatExcess * effectiveUrban * (1 - effectiveGreen * 0.7);
     const cooling    = fn(effectiveGreen) * coolingRange;
     const finalTemp  = parseFloat(Math.max(T_ambient + heatExcess - cooling, T_ambient).toFixed(1));
@@ -175,8 +177,7 @@ function calculate() {
         <div style="font-size:11px; font-weight:600; color:${fg}; margin-bottom:4px;">${zone.icon} ${zone.label}</div>
         <div style="font-family:'Courier New',monospace; font-size:10px; color:#64748b; line-height:1.7;">
           Heat = ${maxHeatExcess.toFixed(1)} × ${effectiveUrban.toFixed(2)} × (1−${effectiveGreen.toFixed(2)}×0.7) = <span style="color:#f59e0b;">${heatExcess.toFixed(1)}°C</span><br>
-          Cool = ${fn(effectiveGreen).toFixed(2)} × ${coolingRange.toFixed(1)} = <span style="color:#22d3ee;">${cooling.toFixed(1)}°C</span><br>
-          <strong style="color:${fg};">T = ${T_ambient.toFixed(1)} + ${heatExcess.toFixed(1)} − ${cooling.toFixed(1)} = ${finalTemp}°C</strong>
+          Cool = ${fn(effectiveGreen).toFixed(2)} × ${coolingRange.toFixed(1)} = <span style="color:#22d3ee;">${cooling.toFixed(1)}°C</span><br>          <strong style="color:${fg};">T = ${T_ambient.toFixed(1)} + ${heatExcess.toFixed(1)} − ${cooling.toFixed(1)} = ${finalTemp}°C</strong>
         </div>
       </div>`;
   }).join("");
