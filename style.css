@@ -18,6 +18,27 @@ body {
 
 h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
 
+/* ── BACK LINK ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.back-link:hover {
+  color: var(--accent2);
+  border-color: rgba(6,182,212,0.4);
+  background: rgba(6,182,212,0.08);
+}
+
+/* ── PAGE HEADER ── */
 .page-header {
   border-bottom: 1px solid var(--border);
   padding-bottom: 1.5rem;
@@ -35,6 +56,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
 
 .page-header p { color: var(--muted); max-width: 600px; }
 
+/* ── CARD ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border) !important;
@@ -51,12 +73,14 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Syne', sans-serif; }
   margin-bottom: 1rem;
 }
 
+/* ── RANGE SLIDER ── */
 input[type="range"] {
   width: 100%;
   accent-color: var(--accent);
   cursor: pointer;
 }
 
+/* ── BADGE ── */
 .badge-val {
   display: inline-block;
   background: rgba(59,130,246,0.15);
@@ -68,11 +92,12 @@ input[type="range"] {
   border: 1px solid rgba(59,130,246,0.3);
 }
 
+/* ── ZONE BOX ── */
 .zone-box {
   border-radius: 12px;
   padding: 14px 10px;
   text-align: center;
-  transition: background-color 0.4s ease;
+  transition: background-color 0.4s ease, border-color 0.4s ease;
 }
 
 .zone-icon  { font-size: 20px; margin-bottom: 4px; }
@@ -80,6 +105,7 @@ input[type="range"] {
 .zone-temp  { font-size: 22px; font-weight: 700; font-family: 'Syne', sans-serif; }
 .zone-label { font-size: 10px; margin-top: 3px; opacity: 0.8; }
 
+/* ── STAT CARD ── */
 .stat-card {
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
@@ -103,6 +129,7 @@ input[type="range"] {
   font-family: 'Syne', sans-serif;
 }
 
+/* ── SELECT ── */
 .form-select {
   background-color: rgba(255,255,255,0.06);
   color: var(--text);
@@ -122,6 +149,7 @@ input[type="range"] {
   color: var(--text);
 }
 
+/* ── MODEL INFO ── */
 .model-info {
   font-size: 12px;
   color: var(--accent2);
@@ -132,6 +160,7 @@ input[type="range"] {
   margin-top: 8px;
 }
 
+/* ── CHART LEGEND DOT ── */
 .legend-dot {
   width: 12px;
   height: 3px;
@@ -139,6 +168,7 @@ input[type="range"] {
   display: inline-block;
 }
 
+/* ── UHI TILE ── */
 .uhi-tile {
   border-radius: 12px;
   padding: 14px 10px;
@@ -147,6 +177,7 @@ input[type="range"] {
   border: 1px solid rgba(59,130,246,0.25);
 }
 
+/* ── CREDITS ── */
 .credit-name {
   font-family: 'Syne', sans-serif;
   font-size: 16px;
@@ -158,3 +189,25 @@ input[type="range"] {
     0 0 20px rgba(6,182,212,0.4);
   cursor: default;
 }
+
+/* ── SVG MAP HOVER ── */
+/* FIX #5 note: CSS only handles hover; modal fade is driven entirely by JS */
+#cityMap rect[id^="svg-zone-"] {
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+#cityMap rect[id^="svg-zone-"]:hover {
+  filter: brightness(1.35) drop-shadow(0 0 6px rgba(255,255,255,0.25));
+  opacity: 0.92;
+}
+
+/* ── MODAL FADE ── */
+/* FIX #5: removed the unreliable [style*="flex"] attribute selector.
+   Opacity is now set directly in JS via openZoneModal / closeZoneModal. */
+#zoneModal {
+  transition: opacity 0.18s ease;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

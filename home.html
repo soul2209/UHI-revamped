@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UHI Analyser — Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0a0f1e;
+      --surface: #111827;
+      --border:  #1f2d40;
+      --accent:  #3b82f6;
+      --accent2: #06b6d4;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+    .bg-orb:nth-child(1) { width: 520px; height: 520px; background: #3b82f6; top: -120px; left: -80px; animation-delay: 0s; }
+    .bg-orb:nth-child(2) { width: 400px; height: 400px; background: #06b6d4; bottom: -80px; right: -60px; animation-delay: -4s; }
+    .bg-orb:nth-child(3) { width: 300px; height: 300px; background: #22d3ee; top: 40%; left: 50%; animation-delay: -8s; opacity: 0.1; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(30px, -20px) scale(1.05); }
+      66%       { transform: translate(-20px, 15px) scale(0.97); }
+    }
+
+    /* Grid overlay */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAV ── */
+    nav {
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(31,45,64,0.8);
+      backdrop-filter: blur(10px);
+      background: rgba(10,15,30,0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); color: white; }
+
+    /* ── HERO ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 1.5rem 3rem;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 40px;
+      padding: 5px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1.8rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-eyebrow-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.4rem, 7vw, 5rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.4rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .hero-title-grad {
+      background: linear-gradient(135deg, #67e8f9 0%, #3b82f6 50%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .btn-primary-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(59,130,246,0.25);
+    }
+    .btn-primary-hero:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 0 40px rgba(59,130,246,0.4); color: white; }
+
+    .btn-ghost-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-ghost-hero:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 3.5rem;
+      padding: 0 1rem;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .stat-pill {
+      text-align: center;
+    }
+    .stat-pill-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-pill-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ── FEATURE CARDS ── */
+    .features-section {
+      padding: 4rem 1.5rem;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 500px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(59,130,246,0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(59,130,246,0.1);
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .feature-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .feature-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── SDG BANNER ── */
+    .sdg-section {
+      padding: 1rem 1.5rem 4rem;
+    }
+
+    .sdg-card {
+      max-width: 860px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(6,182,212,0.08));
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 18px;
+      padding: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .sdg-badge {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(59,130,246,0.3);
+    }
+    .sdg-badge-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+    .sdg-badge-label {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      margin-top: 2px;
+    }
+
+    .sdg-text { flex: 1; min-width: 200px; }
+    .sdg-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+    .sdg-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .sdg-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── PROJECT INFO CARD ── */
+    .project-section {
+      padding: 0 1.5rem 4rem;
+    }
+
+    .project-card {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .project-card-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .project-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .batch-tag {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .project-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .project-meta-item {
+      padding: 1.2rem 2rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .project-meta-item:nth-child(2n) { border-right: none; }
+    .project-meta-item:nth-last-child(-n+2) { border-bottom: none; }
+
+    .meta-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ── MEMBERS ── */
+    .members-section {
+      padding: 0 1.5rem 5rem;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .member-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1rem;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .member-card:hover {
+      border-color: rgba(6,182,212,0.4);
+      transform: translateY(-3px);
+    }
+
+    .member-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: white;
+      margin: 0 auto 0.8rem;
+    }
+
+    .member-roll {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+
+    .member-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .divider {
+      max-width: 860px;
+      margin: 0 auto 3rem;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="page-wrap">
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">🌡️ UHI Analyser</div>
+    <div class="nav-badge">DBIT · FE COMPS-3 · Div C</div>
+    <a href="index.html" class="nav-cta">
+      Launch Analyser →
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Interactive Simulation Tool
+    </div>
+
+    <h1 class="hero-title">
+      Urban Heat Island<br>
+      <span class="hero-title-grad">Analyser</span>
+    </h1>
+
+    <p class="hero-sub">
+      Simulate how urbanization and green cover affect city temperatures. Model six cooling strategies, compare zones, and visualize thermal mapping in real time.
+    </p>
+
+    <div class="hero-cta-group">
+      <a href="index.html" class="btn-primary-hero">
+        🚀 Launch Analyser
+      </a>
+      <a href="#about" class="btn-ghost-hero">
+        Learn More ↓
+      </a>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="stat-pill-val">7</div>
+        <div class="stat-pill-label">City Zones</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-val">6</div>
+        <div class="stat-pill-label">Cooling Models</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-val">Live</div>
+        <div class="stat-pill-label">Temperature Map</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-val">SDG 11</div>
+        <div class="stat-pill-label">Aligned</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="about">
+    <div class="section-label">What's inside</div>
+    <h2 class="section-title">Everything you need to analyse urban heat</h2>
+    <p class="section-sub">Adjust parameters, pick a cooling model, and watch the city respond — all in one page.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <div class="feature-title">Interactive City Map</div>
+        <div class="feature-desc">Click any zone on the SVG map to inspect its thermal breakdown, properties, and before/after comparison.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌈</div>
+        <div class="feature-title">Live Temperature Mapping</div>
+        <div class="feature-desc">Zones shift dynamically from cool blue to hot red as you tune urbanization, green cover, and peak temperature.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">6 Cooling Models</div>
+        <div class="feature-desc">Compare Linear, Exponential, Logarithmic, Power Law, Threshold, and Quadratic cooling strategies side by side.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <div class="feature-title">Before / After Scenarios</div>
+        <div class="feature-desc">See the temperature impact of adding green corridors and full green-city transformations instantly.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎛️</div>
+        <div class="feature-title">Adjustable Parameters</div>
+        <div class="feature-desc">Tune urbanization factor, green cover, and reference peak temperature with smooth real-time sliders.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧮</div>
+        <div class="feature-title">Formula Breakdown</div>
+        <div class="feature-desc">Every calculation shown step-by-step with live values — understand exactly how each temperature is derived.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SDG CARD -->
+  <section class="sdg-section">
+    <div class="sdg-card">
+      <div class="sdg-badge">
+        <div class="sdg-badge-num">11</div>
+        <div class="sdg-badge-label">SDG</div>
+      </div>
+      <div class="sdg-text">
+        <div class="sdg-eyebrow">Digital Green Summit · UN SDG Alignment</div>
+        <div class="sdg-title">Sustainable Cities and Communities</div>
+        <div class="sdg-desc">
+          This project contributes to SDG 11 by modelling how urban heat islands form and how data-driven green planning strategies — parks, tree corridors, water bodies — can make cities more inclusive, safe, resilient, and sustainable for all.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT INFO -->
+  <section class="project-section">
+    <div class="divider"></div>
+    <div class="section-label">Project Details</div>
+    <h2 class="section-title" style="margin-bottom:2rem;">About this project</h2>
+
+    <div class="project-card">
+      <div class="project-card-header">
+        <div class="project-card-title">Urban Heat Island Analyser</div>
+        <div class="batch-tag">Batch A · 2025–2026</div>
+      </div>
+      <div class="project-meta-grid">
+        <div class="project-meta-item">
+          <div class="meta-label">Project Title</div>
+          <div class="meta-value">Urban Heat Island Analyser</div>
+        </div>
+        <div class="project-meta-item">
+          <div class="meta-label">Division</div>
+          <div class="meta-value">Division C</div>
+        </div>
+        <div class="project-meta-item">
+          <div class="meta-label">Batch / Year</div>
+          <div class="meta-value">Batch A · 2025–2026</div>
+        </div>
+        <div class="project-meta-item">
+          <div class="meta-label">SDG</div>
+          <div class="meta-value">SDG 11 — Sustainable Cities and Communities</div>
+        </div>
+        <div class="project-meta-item" style="grid-column: 1 / -1; border-bottom: none;">
+          <div class="meta-label">Institution</div>
+          <div class="meta-value">Don Bosco Institute of Technology · FE COMPS-3</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERS -->
+  <section class="members-section">
+    <div class="section-label">The Team</div>
+    <h2 class="section-title" style="margin-bottom:0.6rem;">Group Members</h2>
+    <p class="section-sub">FE COMPS-3 · Division C</p>
+
+    <div class="members-grid">
+      <div class="member-card">
+        <div class="member-avatar">GK</div>
+        <div class="member-roll">Roll No. 04</div>
+        <div class="member-name">Gouresh Kohli</div>
+      </div>
+      <div class="member-card">
+        <div class="member-avatar">DB</div>
+        <div class="member-roll">Roll No. 06</div>
+        <div class="member-name">Dhruvesh Bhamare</div>
+      </div>
+      <div class="member-card">
+        <div class="member-avatar">SD</div>
+        <div class="member-roll">Roll No. 11</div>
+        <div class="member-name">Shaurya Dhande</div>
+      </div>
+      <div class="member-card">
+        <div class="member-avatar">DD</div>
+        <div class="member-roll">Roll No. 13</div>
+        <div class="member-name">Dawn Dsouza</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>Urban Heat Island Analyser · FE COMPS-3, Division C, Batch A · Don Bosco Institute of Technology · 2025–2026</div>
+    <div style="margin-top:6px; color:#334155;">Built with HTML · CSS · JavaScript · Bootstrap · Chart.js</div>
+  </footer>
+
+</div>
+</body>
+</html>

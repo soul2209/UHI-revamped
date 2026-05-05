@@ -4,30 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Urban Heat Island Analyzer</title>
-
-  <!-- Bootstrap 5 — responsive grid and utility classes -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Google Fonts — Syne for headings, DM Sans for body -->
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <!-- Chart.js — for the cooling model comparison graph -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Our custom CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 <div class="container py-4">
 
-  <!-- ── PAGE HEADER ── -->
+  <!-- PAGE HEADER -->
   <div class="page-header">
+    <div class="mb-2">
+      <a href="home.html" class="back-link">← Home</a>
+    </div>
     <h1 class="mb-1">Urban Heat Island Analyzer</h1>
     <p class="mb-0">Simulate how urbanization and green cover affect city temperatures across different zones and cooling models.</p>
   </div>
 
-  <!-- ── ROW: CONTROLS + SUMMARY ── -->
+  <!-- ROW: CONTROLS + SUMMARY -->
   <div class="row g-4 mb-4">
 
     <!-- Simulation Controls -->
@@ -74,7 +68,6 @@
           </select>
           <div class="model-info" id="modelInfo">Cooling increases proportionally with green cover</div>
         </div>
-
       </div>
     </div>
 
@@ -127,22 +120,17 @@
             <span style="font-size:12px;color:var(--muted);max-width:140px;line-height:1.4;">difference between hottest and coolest zone</span>
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 
-  <!-- ── LIVE CALCULATION BREAKDOWN ── -->
+  <!-- LIVE CALCULATION BREAKDOWN -->
   <div class="card mb-4">
     <div class="card-label">Live calculation breakdown</div>
     <small style="color:var(--muted); font-size:12px; display:block; margin-bottom:1rem;">
       Shows exactly how the UHI formula computes temperatures as you move the sliders.
     </small>
-
     <div class="row g-3">
-
-      <!-- Step 1 -->
       <div class="col-md-4">
         <div style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:14px;">
           <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:#3b82f6; margin-bottom:8px;">STEP 1 — AMBIENT FLOOR</div>
@@ -152,8 +140,6 @@
           <div style="font-size:10px; color:var(--muted); margin-top:4px;">Minimum temp any zone can reach</div>
         </div>
       </div>
-
-      <!-- Step 2 -->
       <div class="col-md-4">
         <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:10px; padding:14px;">
           <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:#f59e0b; margin-bottom:8px;">STEP 2 — MAX HEAT EXCESS</div>
@@ -163,8 +149,6 @@
           <div style="font-size:10px; color:var(--muted); margin-top:4px;">Max extra heat urbanization can add</div>
         </div>
       </div>
-
-      <!-- Step 3 -->
       <div class="col-md-4">
         <div style="background:rgba(34,211,238,0.07); border:1px solid rgba(34,211,238,0.2); border-radius:10px; padding:14px;">
           <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:#22d3ee; margin-bottom:8px;">STEP 3 — COOLING RANGE</div>
@@ -174,46 +158,41 @@
           <div style="font-size:10px; color:var(--muted); margin-top:4px;">Max cooling green cover can apply</div>
         </div>
       </div>
-
     </div>
-
-    <!-- Final formula row -->
     <div style="margin-top:14px; padding:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px;">
       <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:var(--muted); margin-bottom:10px;">FINAL TEMPERATURE FORMULA (applied per zone)</div>
-      <div style="font-family:'Courier New',monospace; font-size:12px; color:#94a3b8; margin-bottom:8px;">T_final = max( T_ambient + (maxHeat × U × (1 − G×0.7)) − (model(G) × coolingRange),  T_ambient )</div>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;" id="calc-zone-breakdown">
-        <!-- filled by JS -->
-      </div>
+      <div style="font-family:'Courier New',monospace; font-size:12px; color:#94a3b8; margin-bottom:8px;">T_final = max( T_ambient + (maxHeat × U × (1 − G×0.7)) − (model(G) × coolingRange), T_ambient )</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;" id="calc-zone-breakdown"></div>
     </div>
-
   </div>
 
-  <!-- ── SVG CITY HEAT MAP ── -->
+  <!-- SVG CITY HEAT MAP -->
   <div class="card mb-4">
     <div class="card-label">City zones — SVG heat map</div>
-    <small style="color:var(--muted); font-size:12px; display:block; margin-bottom:1rem;">Each coloured zone updates live as you adjust the controls.</small>
+    <small style="color:var(--muted); font-size:12px; display:block; margin-bottom:1rem;">
+      Each coloured zone updates live as you adjust the controls.
+      <span style="color:var(--accent2);">↖ Click any zone on the map</span> to inspect its thermal details and before/after comparison.
+    </small>
 
     <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start;">
-
       <svg id="cityMap" viewBox="0 0 400 260" style="width:100%; max-width:460px; border-radius:10px; background:#0d1b2e;" role="img" aria-label="SVG map of simulated city zones coloured by temperature">
         <title>Simulated City Heat Map</title>
-
-        <rect id="svg-zone-0" x="4"   y="4"   width="126" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-1" x="136" y="4"   width="126" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-2" x="268" y="4"   width="128" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-3" x="4"   y="90"  width="126" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-4" x="136" y="90"  width="126" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-5" x="268" y="90"  width="128" height="80"  rx="6" fill="#1e3a5f"/>
-        <rect id="svg-zone-6" x="4"   y="176" width="258" height="80"  rx="6" fill="#1e3a5f"/>
+        <rect id="svg-zone-0" x="4"   y="4"   width="126" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(0)" style="cursor:pointer;"/>
+        <rect id="svg-zone-1" x="136" y="4"   width="126" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(1)" style="cursor:pointer;"/>
+        <rect id="svg-zone-2" x="268" y="4"   width="128" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(2)" style="cursor:pointer;"/>
+        <rect id="svg-zone-3" x="4"   y="90"  width="126" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(3)" style="cursor:pointer;"/>
+        <rect id="svg-zone-4" x="136" y="90"  width="126" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(4)" style="cursor:pointer;"/>
+        <rect id="svg-zone-5" x="268" y="90"  width="128" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(5)" style="cursor:pointer;"/>
+        <rect id="svg-zone-6" x="4"   y="176" width="258" height="80"  rx="6" fill="#1e3a5f" onclick="openZoneModal(6)" style="cursor:pointer;"/>
         <rect id="svg-uhi"    x="268" y="176" width="128" height="80"  rx="6" fill="#0f2244"/>
 
-        <text x="67"  y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🏠 Residential NW</text>
-        <text x="199" y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🌳 Central Park</text>
-        <text x="332" y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🏢 Commercial</text>
-        <text x="67"  y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🏭 Industrial</text>
-        <text x="199" y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🏠 Residential SE</text>
-        <text x="332" y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">💧 Urban Lake</text>
-        <text x="133" y="207" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9"  pointer-events="none">🌾 Suburban Edge</text>
+        <text x="67"  y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🏠 Residential NW</text>
+        <text x="199" y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🌳 Central Park</text>
+        <text x="332" y="35"  text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🏢 Commercial</text>
+        <text x="67"  y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🏭 Industrial</text>
+        <text x="199" y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🏠 Residential SE</text>
+        <text x="332" y="121" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">💧 Urban Lake</text>
+        <text x="133" y="207" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.7)" font-size="9" pointer-events="none">🌾 Suburban Edge</text>
 
         <text id="svg-t-0" x="67"  y="56"  text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14" font-weight="bold" pointer-events="none">--°C</text>
         <text id="svg-t-1" x="199" y="56"  text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14" font-weight="bold" pointer-events="none">--°C</text>
@@ -223,35 +202,33 @@
         <text id="svg-t-5" x="332" y="142" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14" font-weight="bold" pointer-events="none">--°C</text>
         <text id="svg-t-6" x="133" y="228" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="14" font-weight="bold" pointer-events="none">--°C</text>
 
-        <text x="332" y="205" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.5)" font-size="8"  pointer-events="none">UHI INTENSITY</text>
+        <text x="332" y="205" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.5)" font-size="8" pointer-events="none">UHI INTENSITY</text>
         <text id="svg-uhi-val" x="332" y="228" text-anchor="middle" dominant-baseline="middle" fill="#3b82f6" font-size="16" font-weight="bold" pointer-events="none">--°C</text>
-        <text x="332" y="246" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.4)" font-size="7"  pointer-events="none">max − min</text>
+        <text x="332" y="246" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.4)" font-size="7" pointer-events="none">max − min</text>
       </svg>
 
       <div style="flex:1; min-width:220px;">
         <div class="row row-cols-2 g-2" id="zoneGrid"></div>
       </div>
-
     </div>
 
-    <!-- ── GLOWING CREDITS ── -->
-    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
+    <!-- CREDITS -->
+    <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border); text-align:center;">
       <div style="font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:1.2rem;">Developed by</div>
       <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px;">
-        <span class="credit-name" style="--delay:0s;">Gouresh Kohli</span>
+        <span class="credit-name">Gouresh Kohli</span>
         <span style="color:var(--border); font-size:18px; align-self:center;">·</span>
-        <span class="credit-name" style="--delay:0.6s;">Dhruvesh Bhamare</span>
+        <span class="credit-name">Dhruvesh Bhamare</span>
         <span style="color:var(--border); font-size:18px; align-self:center;">·</span>
-        <span class="credit-name" style="--delay:1.2s;">Shaurya Dhande</span>
+        <span class="credit-name">Shaurya Dhande</span>
         <span style="color:var(--border); font-size:18px; align-self:center;">·</span>
-        <span class="credit-name" style="--delay:1.8s;">Dawn Dsouza</span>
+        <span class="credit-name">Dawn Dsouza</span>
       </div>
-      <div style="font-size:11px; color:var(--muted); margin-top:10px; letter-spacing:0.05em;">FE COMPS-3 · Division C · Don Bosco Institute of Technology</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:10px; letter-spacing:0.05em;">FE COMPS-3 · Division C · Batch A · Don Bosco Institute of Technology · 2025–2026</div>
     </div>
-
   </div>
 
-  <!-- ── BEFORE / AFTER COMPARISON ── -->
+  <!-- BEFORE / AFTER COMPARISON -->
   <div class="card mb-4">
     <div class="card-label">Before / after comparison — urban planning scenario</div>
     <small style="color:var(--muted); font-size:12px; display:block; margin-bottom:1rem;">
@@ -261,7 +238,7 @@
     <div id="beforeAfterSummary" style="margin-top:1rem; padding:12px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px; font-size:13px; color:var(--muted); display:none;"></div>
   </div>
 
-  <!-- ── COOLING MODEL CHART ── -->
+  <!-- COOLING MODEL CHART -->
   <div class="card">
     <div class="card-label">Cooling model comparison</div>
     <small style="color:var(--muted); font-size:12px; display:block; margin-bottom:10px;">X-axis = green cover percentage. Y-axis = how many °C of cooling each model predicts.</small>
@@ -273,7 +250,48 @@
 
 </div>
 
-<!-- Our custom JavaScript — loaded at the bottom so HTML is ready first -->
+<!-- ZONE DETAIL MODAL -->
+<div id="zoneModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(5,10,25,0.82); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#111827; border:1px solid #1f2d40; border-radius:18px; width:100%; max-width:540px; box-shadow:0 0 60px rgba(59,130,246,0.18); overflow:hidden; position:relative; max-height:90vh; overflow-y:auto;">
+
+    <!-- Sticky header -->
+    <div style="padding:20px 24px 16px; border-bottom:1px solid #1f2d40; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#111827; z-index:1;">
+      <div>
+        <div id="zoneModalTitle" style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:#e2e8f0;"></div>
+        <div id="zoneModalSub"   style="font-size:11px; color:#64748b; margin-top:2px; letter-spacing:0.06em; text-transform:uppercase;"></div>
+      </div>
+      <button onclick="closeZoneModal()" style="background:rgba(255,255,255,0.06); border:1px solid #1f2d40; color:#94a3b8; border-radius:8px; width:32px; height:32px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">&times;</button>
+    </div>
+
+    <!-- Temp + properties -->
+    <div style="padding:16px 24px; display:flex; align-items:flex-start; gap:16px; border-bottom:1px solid #1f2d40; flex-wrap:wrap;">
+      <div>
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:#64748b; margin-bottom:3px;">Current temperature</div>
+        <div id="zoneModalTempVal" style="font-size:2.4rem; font-weight:800; font-family:'Syne',sans-serif;"></div>
+        <div id="zoneModalHeatLabel" style="font-size:11px; margin-top:2px;"></div>
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:0.07em; color:#64748b; margin-bottom:8px;">Zone properties</div>
+        <div id="zoneModalProps" style="display:flex; flex-direction:column; gap:5px;"></div>
+      </div>
+    </div>
+
+    <!-- Before / After -->
+    <div style="padding:16px 24px; border-bottom:1px solid #1f2d40;">
+      <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:#64748b; text-transform:uppercase; margin-bottom:12px;">Before / After — for this zone</div>
+      <div id="zoneModalBAGrid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;"></div>
+      <div id="zoneModalBASummary" style="margin-top:12px; font-size:12px; color:#94a3b8; line-height:1.6;"></div>
+    </div>
+
+    <!-- Formula -->
+    <div style="padding:16px 24px;">
+      <div style="font-size:10px; font-weight:600; letter-spacing:0.07em; color:#64748b; text-transform:uppercase; margin-bottom:10px;">Formula breakdown</div>
+      <div id="zoneModalFormula" style="font-family:'Courier New',monospace; font-size:11px; color:#94a3b8; background:rgba(255,255,255,0.03); border:1px solid #1f2d40; border-radius:8px; padding:12px; line-height:1.9;"></div>
+    </div>
+
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
